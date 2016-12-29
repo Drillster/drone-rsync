@@ -44,11 +44,11 @@ fi
 # Building rsync command
 expr="rsync -az"
 
-if [[ -n "$PLUGIN_RECURSIVE"  && $PLUGIN_RECURSIVE ]]; then
+if [[ -n "$PLUGIN_RECURSIVE" && "$PLUGIN_RECURSIVE" == "true" ]]; then
     expr="$expr -r"
 fi
 
-if [[ -n "$PLUGIN_DELETE" && $PLUGIN_DELETE ]]; then
+if [[ -n "$PLUGIN_DELETE" && "$PLUGIN_DELETE" == "true" ]]; then
     expr="$expr --del"
 fi
 
