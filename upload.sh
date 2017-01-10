@@ -41,8 +41,14 @@ if [ -z "$RSYNC_KEY" ]; then
     SSH_KEY=$PLUGIN_KEY
 fi
 
+if [ -z "$PLUGIN_ARGS" ]; then
+    ARGS=
+else
+    ARGS=$PLUGIN_ARGS
+fi
+
 # Building rsync command
-expr="rsync -az"
+expr="rsync -az $ARGS"
 
 if [[ -n "$PLUGIN_RECURSIVE" && "$PLUGIN_RECURSIVE" == "true" ]]; then
     expr="$expr -r"
