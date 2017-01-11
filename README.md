@@ -21,6 +21,7 @@ docker run --rm \
   -e PLUGIN_HOSTS="127.0.0.1" \
   -e PLUGIN_TARGET="./" \
   -e PLUGIN_SCRIPT="echo \"Done!\"" \
+  -e PLUGIN_ARGS="--blocking-io" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
   drillster/drone-rsync
