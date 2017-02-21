@@ -88,8 +88,19 @@ mkdir -p "$home/.ssh"
 printf "StrictHostKeyChecking no\n" > "$home/.ssh/config"
 chmod 0700 "$home/.ssh/config"
 
-echo "$SSH_KEY" > "$home/.ssh/id_rsa"
-chmod 0600 "$home/.ssh/id_rsa"
+keyfile="$home/.ssh/id_rsa"
+echo "$SSH_KEY" | grep -q "ssh-ed25519"
+if [ $? -eq 0 ]; then
+    printf "Using ed25519 based key\n"
+    keyfile="$home/.ssh/id_ed25519"
+fi
+echo "$SSH_KEY" | grep -q "ecdsa-"
+if [ $? -eq 0 ]; then
+    printf "Using ecdsa based key\n"
+    keyfile="$home/.ssh/id_ecdsa"
+fi
+echo "$SSH_KEY" > $keyfile
+chmod 0600 $keyfile
 
 # Parse SSH commands
 function join_with { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
