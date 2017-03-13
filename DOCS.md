@@ -14,15 +14,23 @@ The following parameters are used to configure the plugin:
 - **delete** - delete target folder contents, defaults to `false`
 - **script** - list of commands to execute on remote machines
 
-The following secret values can be set to configure the plugin:
-- **RSYNC_USER** - corresponds to **user**
-- **RSYNC_KEY** - corresponds to **key**
-
-It is highly recommended to put the **RSYNC_KEY** into a secret so it is not exposed to users. This can be done using the drone-cli.
+It is highly recommended to put your **key** into a secret so it is not exposed to users. This can be done using the drone-cli.
 
 ```sh
-drone secret add --image=drillster/drone-rsync \
-    octocat/hello-world RSYNC_KEY @path/to/.ssh/id_rsa
+drone secret add octocat/hello-world RSYNC_KEY @path/to/.ssh/id_rsa
+```
+
+Add the secret to your `.drone.yml`:
+```yaml
+pipeline:
+  rsync:
+    image: drillster/drone-rsync
+    user: some-user
+    key: ${RSYNC_KEY}
+    hosts:
+      - remote1
+    source: ./dist
+    target: ~/packages
 ```
 
 Then sign the YAML file after all secrets are added.
@@ -31,7 +39,7 @@ Then sign the YAML file after all secrets are added.
 drone sign octocat/hello-world
 ```
 
-See [secrets](http://readme.drone.io/0.5/usage/secrets/) for additional information on secrets.
+See the [Secret Guide](http://readme.drone.io/usage/secret-guide/) for additional information on secrets.
 
 ## Examples
 ```yaml
@@ -39,6 +47,7 @@ pipeline:
   rsync:
     image: drillster/drone-rsync
     user: some-user
+    key: ${RSYNC_KEY}
     hosts:
       - remote1
       - remote2
