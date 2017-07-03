@@ -70,11 +70,11 @@ The example above illustrates a situation where an app package (`app.tar.gz`) wi
 The script passed to **script** will be executed on remote machines directly after rsync completes to deploy the files. It will be executed step by step until a command returns a non-zero exit-code. If this happens, the entire plugin will exit and fail the build.
 
 
-## Key in drone >= 0.7
+## SSH key secret in Drone >= 0.6
 
-For drone 0.7 or drone 0.8:
-register your key with:
-``` bash
+Secret injection has changed for Drone 0.6 and up. Register your SSH key secret using the drone-cli.
+
+```sh
 drone secret update \
    --repository your/repo \
    --name plugin_key \
@@ -82,7 +82,8 @@ drone secret update \
    --image drillster/drone-rsync
 ```
 
-Do not add a `key` entry in `.drone`, but add:
+Do not add a `key` parameter in `.drone.yml` configuration, but add:
+
 ```
 secrets: [ plugin_key ]
 ```
