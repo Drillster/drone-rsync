@@ -68,3 +68,23 @@ The example above illustrates a situation where an app package (`app.tar.gz`) wi
 
 ## Important
 The script passed to **script** will be executed on remote machines directly after rsync completes to deploy the files. It will be executed step by step until a command returns a non-zero exit-code. If this happens, the entire plugin will exit and fail the build.
+
+
+## Key in drone >= 0.7
+
+For drone 0.7 or drone 0.8:
+register your key with:
+``` bash
+drone secret update \
+   --repository your/repo \
+   --name plugin_key \
+   --value @./id_rsa.pub \
+   --image drillster/drone-rsync
+```
+
+Do not add a `key` entry in `.drone`, but add:
+```
+secrets: [ plugin_key ]
+```
+
+Using any other name will not work.
