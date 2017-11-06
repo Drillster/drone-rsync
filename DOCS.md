@@ -78,7 +78,7 @@ Secret injection has changed for Drone 0.6 and up. Register your SSH key secret 
 drone secret update \
    --repository your/repo \
    --name plugin_key \
-   --value @./id_rsa.pub \
+   --value @./id_rsa \
    --image drillster/drone-rsync
 ```
 
