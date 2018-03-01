@@ -32,13 +32,15 @@ if [ -z "$RSYNC_USER" ]; then
     fi
 fi
 
-SSH_KEY=$RSYNC_KEY
-if [ -z "$RSYNC_KEY" ]; then
-    if [ -z "$PLUGIN_KEY" ]; then
-        echo "No private key specified!"
-        exit 1
-    fi
+if [ -n "$PLUGIN_KEY" ]; then
     SSH_KEY=$PLUGIN_KEY
+fi
+if [ -n "$RSYNC_KEY" ]; then
+    SSH_KEY=$RSYNC_KEY
+fi
+if [ -z "$SSH_KEY" ]; then
+    echo "No private key specified!"
+    exit 1
 fi
 
 if [ -z "$PLUGIN_ARGS" ]; then
