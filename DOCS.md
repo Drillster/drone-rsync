@@ -7,12 +7,13 @@ The following parameters are used to configure the plugin:
 - **hosts** - hostnames or ip-addresses of the remote machines
 - **port** - port to connect to on the remote machines, defaults to `22`
 - **source** - source folder to synchronize from, defaults to `./`
-- **target** - target folder on remote machines to synchronize to
+- **target** - target folder to synchronize to
 - **include** - rsync include filter
 - **exclude** - rsync exclude filter
 - **recursive** - recursively synchronize, defaults to `false`
 - **delete** - delete target folder contents, defaults to `false`
 - **script** - list of commands to execute on remote machines
+- **pull** - rsync from the hosts to the working directory, defaults to `false`
 
 ## Secrets
 The following secrets can be used to secure the sensitive parts of your configuration:

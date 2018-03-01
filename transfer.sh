@@ -80,8 +80,6 @@ for filter in "${FILTER[@]}"; do
     expr="$expr --filter=$filter"
 done
 
-expr="$expr $SOURCE"
-
 # Prepare SSH
 home="/root"
 
@@ -113,8 +111,14 @@ script=$(join_with ' && ' "${COMMANDS[@]}")
 IFS=','; read -ra HOSTS <<< "$PLUGIN_HOSTS"
 result=0
 for host in "${HOSTS[@]}"; do
-    echo $(printf "%s" "$ $expr $USER@$host:$PLUGIN_TARGET ...")
-    eval "$expr $USER@$host:$PLUGIN_TARGET"
+    from=$SOURCE
+    to=$USER@$host:$PLUGIN_TARGET
+    if [[ -n "$PLUGIN_PULL" && "$PLUGIN_PULL" == "true" ]]; then
+        from=$USER@$host:$SOURCE
+        to=$PLUGIN_TARGET
+    fi
+    echo $(printf "%s" "$ $expr $from $to ...")
+    eval "$expr $from $to"
     result=$(($result+$?))
     if [ "$result" -gt "0" ]; then exit $result; fi
     if [ -n "$PLUGIN_SCRIPT" ]; then
