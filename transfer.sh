@@ -113,7 +113,7 @@ result=0
 for host in "${HOSTS[@]}"; do
     from=$SOURCE
     to=$USER@$host:$PLUGIN_TARGET
-    if [[ -n "$PLUGIN_PULL" && "$PLUGIN_PULL" == "true" ]]; then
+    if [[ -n "$PLUGIN_RSYNC_PULL" && "$PLUGIN_RSYNC_PULL" == "true" ]]; then
         from=$USER@$host:$SOURCE
         to=$PLUGIN_TARGET
     fi
