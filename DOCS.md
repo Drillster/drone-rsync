@@ -13,7 +13,7 @@ The following parameters are used to configure the plugin:
 - **recursive** - recursively synchronize, defaults to `false`
 - **delete** - delete target folder contents, defaults to `false`
 - **script** - list of commands to execute on remote machines
-- **pull** - rsync from the hosts to the working directory, defaults to `false`
+- **rsync_pull** - rsync from the hosts to the working directory, defaults to `false`
 
 ## Secrets
 The following secrets can be used to secure the sensitive parts of your configuration:
