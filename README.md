@@ -18,7 +18,8 @@ Execute from the working directory (assuming you have an SSH server running on 1
 ```bash
 docker run --rm \
   -e PLUGIN_KEY=$(cat some-private-key) \
-  -e PLUGIN_HOSTS="127.0.0.1" \
+  -e PLUGIN_HOSTS="127.0.0.1, 127.0.0.2, 127.0.0.3" \
+  -e PLUGIN_PORTS="22, 23, 24" \
   -e PLUGIN_TARGET="./" \
   -e PLUGIN_SCRIPT="echo \"Done!\"" \
   -e PLUGIN_ARGS="--blocking-io" \

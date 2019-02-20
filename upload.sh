@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ -z "$PLUGIN_HOSTS" ]; then
     echo "Specify at least one host!"
     exit 1
@@ -10,10 +9,8 @@ if [ -z "$PLUGIN_TARGET" ]; then
     exit 1
 fi
 
-PORT=$PLUGIN_PORT
-if [ -z "$PLUGIN_PORT" ]; then
+if [ -z "$PLUGIN_PORTS" ]; then
     echo "Port not specified, using default port 22!"
-    PORT=22
 fi
 
 SOURCE=$PLUGIN_SOURCE
@@ -58,7 +55,7 @@ if [[ -n "$PLUGIN_DELETE" && "$PLUGIN_DELETE" == "true" ]]; then
     expr="$expr --del"
 fi
 
-expr="$expr -e 'ssh -p $PORT -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -o StrictHostKeyChecking=no'"
+expr="$expr -e 'ssh -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -o StrictHostKeyChecking=no'"
 
 # Include
 IFS=','; read -ra INCLUDE <<< "$PLUGIN_INCLUDE"
@@ -109,20 +106,28 @@ script=$(join_with ' && ' "${COMMANDS[@]}")
 
 # Run rsync
 IFS=','; read -ra HOSTS <<< "$PLUGIN_HOSTS"
+IFS=','; read -ra PORTS <<< "$PLUGIN_PORTS"
 result=0
-for host in "${HOSTS[@]}"; do
-    echo $(printf "%s" "$ $expr $USER@$host:$PLUGIN_TARGET ...")
-    eval "$expr $USER@$host:$PLUGIN_TARGET"
+for ((i=0; i < ${#HOSTS[@]}; i++))
+do
+    HOST=${HOSTS[$i]}
+    PORT=${PORTS[$i]}
+    if [ -z $PORT ]
+    then
+    # Default Port 22
+    PORT="22"
+    fi
+    echo $(printf "%s" "$ $(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET ...")
+    eval "$(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET"
     result=$(($result+$?))
     if [ "$result" -gt "0" ]; then exit $result; fi
     if [ -n "$PLUGIN_SCRIPT" ]; then
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$host ...")
+        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST ...")
         echo $(printf "%s" " > $script ...")
-        eval "ssh -p $PORT $USER@$host '$script'"
+        eval "ssh -p $PORT $USER@$HOST '$script'"
         result=$(($result+$?))
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$host result: $?")
+        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST result: $?")
         if [ "$result" -gt "0" ]; then exit $result; fi
     fi
 done
-
 exit $result
