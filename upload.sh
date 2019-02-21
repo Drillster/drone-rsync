@@ -8,9 +8,10 @@ if [ -z "$PLUGIN_TARGET" ]; then
     echo "Specify a target!"
     exit 1
 fi
-
-if [ -z "$PLUGIN_PORTS" ]; then
+DEFAULT_PORT=$PLUGIN_PORT
+if [ -z "$PLUGIN_PORT" ]; then
     echo "Port not specified, using default port 22!"
+    DEFAULT_PORT="22"
 fi
 
 SOURCE=$PLUGIN_SOURCE
@@ -115,7 +116,7 @@ do
     if [ -z $PORT ]
     then
     # Default Port 22
-    PORT="22"
+    PORT=$DEFAULT_PORT
     fi
     echo $(printf "%s" "$ $(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET ...")
     eval "$(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET"
