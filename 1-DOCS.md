@@ -60,6 +60,8 @@ steps:
   environment:
     RSYNC_KEY:
       from_secret: rsync_key
+    RSYNC_USER:
+      from_secret: rsync_user
   settings:
     hosts:
       - remote1
@@ -75,7 +77,6 @@ steps:
       - cd ~/packages
       - md5sum -c app.tar.gz.md5
       - tar -xf app.tar.gz -C ~/app
-    secrets: [ rsync_user, rsync_key ]
 ```
 
 The example above illustrates a situation where an app package (`app.tar.gz`) will be deployed to 2 remote hosts (`remote1` and `remote2`). An md5 checksum will be deployed as well. After deploying, the md5 checksum is used to check the deployed package. If successful the package is extracted.
