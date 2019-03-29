@@ -32,6 +32,7 @@ Add the secret to your `.drone.yml`:
 ```yaml
 kind: pipeline
 
+steps:
 - name: rsync
   image: drillster/drone-rsync
   settings:
@@ -50,6 +51,7 @@ See the [secret guides](https://docs.drone.io/user-guide/secrets/pre-repository/
 kind: pipeline
 name: default
 
+steps:
 - name: rsync
   image: drillster/drone-rsync
   settings:
