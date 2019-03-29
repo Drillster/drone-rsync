@@ -35,6 +35,9 @@ kind: pipeline
 steps:
 - name: rsync
   image: drillster/drone-rsync
+  environment:
+    RSYNC_KEY:
+      from_secret: rsync_key
   settings:
     user: some-user
     hosts:
@@ -54,6 +57,9 @@ name: default
 steps:
 - name: rsync
   image: drillster/drone-rsync
+  environment:
+    RSYNC_KEY:
+      from_secret: rsync_key
   settings:
     hosts:
       - remote1
