@@ -1,7 +1,7 @@
-FROM alpine:3.4
-MAINTAINER Michael de Wit <michael@drillster.com>
+FROM alpine:latest
+MAINTAINER Jesse Quinn <me@jessequinn.info>
 
 RUN apk add --no-cache ca-certificates bash openssh-client rsync
-COPY upload.sh /usr/local/
+COPY drone.sh /usr/local/
 
-ENTRYPOINT ["/usr/local/upload.sh"]
+ENTRYPOINT ["/usr/local/drone.sh"]
