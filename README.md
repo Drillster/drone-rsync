@@ -25,7 +25,7 @@ docker run --rm \
   -e PLUGIN_PORTS="22, 23, 24" \
   -e PLUGIN_TARGET="./" \
   -e PLUGIN_PRESCRIPT="echo \"Prescript Done!\"" \
-  -e PLUGIN_POSTSCRIPT="echo \"Postscript Done!\"" \
+  -e PLUGIN_SCRIPT="echo \"Postscript Done!\"" \
   -e PLUGIN_ARGS="--blocking-io" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
