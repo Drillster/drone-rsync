@@ -56,7 +56,10 @@ if [[ -n "$PLUGIN_DELETE" && "$PLUGIN_DELETE" == "true" ]]; then
     expr="$expr --del"
 fi
 
-expr="$expr -e 'ssh -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -o StrictHostKeyChecking=no'"
+home="/root"
+keyfile="$home/.ssh/id"
+
+expr="$expr -e 'ssh -i $keyfile -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -o StrictHostKeyChecking=no'"
 
 # Include
 IFS=','; read -ra INCLUDE <<< "$PLUGIN_INCLUDE"
@@ -79,24 +82,11 @@ done
 expr="$expr $SOURCE"
 
 # Prepare SSH
-home="/root"
-
 mkdir -p "$home/.ssh"
 
 printf "StrictHostKeyChecking no\n" > "$home/.ssh/config"
 chmod 0700 "$home/.ssh/config"
 
-keyfile="$home/.ssh/id_rsa"
-echo "$SSH_KEY" | grep -q "ssh-ed25519"
-if [ $? -eq 0 ]; then
-    printf "Using ed25519 based key\n"
-    keyfile="$home/.ssh/id_ed25519"
-fi
-echo "$SSH_KEY" | grep -q "ecdsa-"
-if [ $? -eq 0 ]; then
-    printf "Using ecdsa based key\n"
-    keyfile="$home/.ssh/id_ecdsa"
-fi
 echo "$SSH_KEY" > $keyfile
 chmod 0600 $keyfile
 
