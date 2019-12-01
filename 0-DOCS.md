@@ -59,6 +59,10 @@ pipeline:
       - "app.tar.gz.md5"
     exclude:
       - "**.*"
+    prescript:
+      - cd ~/packages
+      - md5sum -c app.tar.gz.md5
+      - tar -xf app.tar.gz -C ~/app
     script:
       - cd ~/packages
       - md5sum -c app.tar.gz.md5

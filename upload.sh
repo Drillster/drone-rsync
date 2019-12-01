@@ -8,6 +8,7 @@ if [ -z "$PLUGIN_TARGET" ]; then
     echo "Specify a target!"
     exit 1
 fi
+
 DEFAULT_PORT=$PLUGIN_PORT
 if [ -z "$PLUGIN_PORT" ]; then
     echo "Port not specified, using default port 22!"
@@ -100,10 +101,14 @@ fi
 echo "$SSH_KEY" > $keyfile
 chmod 0600 $keyfile
 
-# Parse SSH commands
 function join_with { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
+# Parse SSH precommands
+IFS=','; read -ra COMMANDS <<< "$PLUGIN_PRESCRIPT"
+prescript=$(join_with ' && ' "${COMMANDS[@]}")
+# Parse SSH postcommands
 IFS=','; read -ra COMMANDS <<< "$PLUGIN_SCRIPT"
-script=$(join_with ' && ' "${COMMANDS[@]}")
+postscript=$(join_with ' && ' "${COMMANDS[@]}")
 
 # Run rsync
 IFS=','; read -ra HOSTS <<< "$PLUGIN_HOSTS"
@@ -119,13 +124,21 @@ do
     PORT=$DEFAULT_PORT
     fi
     echo $(printf "%s" "$ $(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET ...")
+    if [ -n "$PLUGIN_PRESCRIPT" ]; then
+        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST ...")
+        echo $(printf "%s" " > $prescript ...")
+        eval "ssh -p $PORT $USER@$HOST '$prescript'"
+        result=$(($result+$?))
+        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST result: $?")
+        if [ "$result" -gt "0" ]; then exit $result; fi
+    fi
     eval "$(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET"
     result=$(($result+$?))
     if [ "$result" -gt "0" ]; then exit $result; fi
     if [ -n "$PLUGIN_SCRIPT" ]; then
         echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST ...")
-        echo $(printf "%s" " > $script ...")
-        eval "ssh -p $PORT $USER@$HOST '$script'"
+        echo $(printf "%s" " > $postscript ...")
+        eval "ssh -p $PORT $USER@$HOST '$postscript'"
         result=$(($result+$?))
         echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST result: $?")
         if [ "$result" -gt "0" ]; then exit $result; fi

@@ -12,7 +12,8 @@ The following parameters are used to configure the plugin:
 - **exclude** - rsync exclude filter
 - **recursive** - recursively synchronize, defaults to `false`
 - **delete** - delete target folder contents, defaults to `false`
-- **script** - list of commands to execute on remote machines
+- **prescript** - list of commands to execute on remote machines before rsync occurs
+- **postscript** - list of commands to execute on remote machines after rsync occurs
 
 ## Secrets
 The following secrets can be used to secure the sensitive parts of your configuration:
@@ -73,7 +74,11 @@ steps:
       - "app.tar.gz.md5"
     exclude:
       - "**.*"
-    script:
+    prescript:
+      - cd ~/packages
+      - md5sum -c app.tar.gz.md5
+      - tar -xf app.tar.gz -C ~/app    
+    script: 
       - cd ~/packages
       - md5sum -c app.tar.gz.md5
       - tar -xf app.tar.gz -C ~/app
