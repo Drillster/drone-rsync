@@ -48,7 +48,7 @@ fi
 
 # Building rsync command
 expr="rsync -az $ARGS"
-
+#说明：ARGS参数为附加参数，默认已带有"-az"参数
 if [[ -n "$PLUGIN_RECURSIVE" && "$PLUGIN_RECURSIVE" == "true" ]]; then
     expr="$expr -r"
 fi
