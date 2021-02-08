@@ -3,10 +3,7 @@
 
 This is a pure Bash [Drone](https://github.com/drone/drone) >= 0.5 plugin to sync files to remote hosts.
 
-For more information on how to use the plugin, please take a look at the docs:
-
-- For Drone CI versions `< 1` : https://github.com/Drillster/drone-rsync/blob/master/0-DOCS.md
-- For Drone CI versions `>= 1` : https://github.com/Drillster/drone-rsync/blob/master/1-DOCS.md
+For more information on how to use the plugin, please take a look at [the docs](https://github.com/Drillster/drone-rsync/blob/master/DOCS.md).
 
 ## Docker
 Build the docker image by running:

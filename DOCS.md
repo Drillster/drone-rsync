@@ -12,13 +12,9 @@ The following parameters are used to configure the plugin:
 - **exclude** - rsync exclude filter
 - **recursive** - recursively synchronize, defaults to `false`
 - **delete** - delete target folder contents, defaults to `false`
+- **args** - instruct plugin to use these additional rsync CLI arguments, example: `"--blocking-io"`
 - **prescript** - list of commands to execute on remote machines before rsync occurs
 - **script** - list of commands to execute on remote machines after rsync occurs
-
-## Secrets
-The following secrets can be used to secure the sensitive parts of your configuration:
-- **rsync_key** - private SSH key for the remote machines
-- **rsync_user** - user to log in as on the remote machines
 
 It is highly recommended to put your private key into a secret (`rsync_key`) so it is not exposed to users. This can be done using the drone-cli:
 
@@ -26,7 +22,7 @@ It is highly recommended to put your private key into a secret (`rsync_key`) so 
 drone secret add \
    --repository your/repo \
    --name rsync_key \
-   --value @./id_rsa \
+   --data @./id_rsa \
 ```
 
 Add the secret to your `.drone.yml`:
@@ -36,11 +32,10 @@ kind: pipeline
 steps:
 - name: rsync
   image: drillster/drone-rsync
-  environment:
-    RSYNC_KEY:
-      from_secret: rsync_key
   settings:
     user: some-user
+    key:
+      from_secret: rsync_key
     hosts:
       - remote1
     source: ./dist
@@ -58,15 +53,14 @@ name: default
 steps:
 - name: rsync
   image: drillster/drone-rsync
-  environment:
-    RSYNC_KEY:
-      from_secret: rsync_key
-    RSYNC_USER:
-      from_secret: rsync_user
   settings:
     hosts:
       - remote1
       - remote2
+    user:
+      from_secret: rsync_user
+    key:
+      from_secret: rsync_key
     source: ./dist
     target: ~/packages
     include:

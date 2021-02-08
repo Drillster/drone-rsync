@@ -1,7 +1,6 @@
-FROM alpine:3.8
-MAINTAINER Michael de Wit <michael@drillster.com>
+FROM alpine:3.13
 
-RUN apk add --no-cache ca-certificates bash openssh-client rsync
+RUN apk add --no-cache --update ca-certificates bash openssh-client rsync
 COPY upload.sh /usr/local/
 
 ENTRYPOINT ["/usr/local/upload.sh"]
