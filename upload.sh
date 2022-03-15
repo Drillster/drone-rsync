@@ -47,9 +47,9 @@ else
 fi
 
 if [ -z "$PLUGIN_LOCALSCRIPT" ]; then
-    LOCALSCRIPT=
+    LOCALSCRIPTS=
 else
-    LOCALSCRIPT=$PLUGIN_LOCALSCRIPT
+    IFS=','; read -ra LOCALSCRIPTS <<< "$PLUGIN_LOCALSCRIPT"
 fi
 
 # Building rsync command
@@ -122,9 +122,13 @@ IFS=','; read -ra PORTS <<< "$PLUGIN_PORTS"
 result=0
 
 # Run local script
-if [[ -n "$LOCALSCRIPT" ]]; then
-    echo $(printf "%s" " (local)> $LOCALSCRIPT ...")
-    eval "$LOCALSCRIPT"
+if [[ -n "$LOCALSCRIPTS" ]]; then
+    for ((i=0; i < ${#LOCALSCRIPTS[@]}; i++))
+    do
+        LOCALSCRIPT=${LOCALSCRIPTS[$i]}
+        echo $(printf "%s" " (local)> $LOCALSCRIPT ...")
+        eval "$LOCALSCRIPT"
+    done
 fi
 
 for ((i=0; i < ${#HOSTS[@]}; i++))
