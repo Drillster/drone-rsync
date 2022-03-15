@@ -24,7 +24,14 @@ docker run --rm \
   -e PLUGIN_PRESCRIPT="echo \"Prescript Done!\"" \
   -e PLUGIN_SCRIPT="echo \"Postscript Done!\"" \
   -e PLUGIN_ARGS="--blocking-io" \
+  -e PLUGIN_LOCALSCRIPT="echo \"Localscript Done!\"" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
   drillster/drone-rsync
 ```
+
+## Updates
+### 2022-03-15
+Add the support of local scripts, that could be run on local server before rsync to remote server.
+This is required because when target server got lower version of openSSH, and it's impossible to upgrade the target server, so adopt a local script feature to run below before sync files.
+`echo -e "Host xxx.xxx.xxx.xxx\n    KexAlgorithms +diffie-hellman-group1-sha1" >> ~/.ssh/config`
