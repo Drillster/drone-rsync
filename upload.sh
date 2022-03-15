@@ -46,6 +46,12 @@ else
     ARGS=$PLUGIN_ARGS
 fi
 
+if [ -z "$PLUGIN_LOCALSCRIPT" ]; then
+    LOCALSCRIPT=
+else
+    LOCALSCRIPT=$PLUGIN_LOCALSCRIPT
+fi
+
 # Building rsync command
 expr="rsync -az $ARGS"
 
@@ -114,6 +120,13 @@ postscript=$(join_with ' && ' "${COMMANDS[@]}")
 IFS=','; read -ra HOSTS <<< "$PLUGIN_HOSTS"
 IFS=','; read -ra PORTS <<< "$PLUGIN_PORTS"
 result=0
+
+# Run local script
+if [[ -n "$LOCALSCRIPT" ]]; then
+    echo $(printf "%s" " (local)> $LOCALSCRIPT ...")
+    eval "$LOCALSCRIPT"
+fi
+
 for ((i=0; i < ${#HOSTS[@]}; i++))
 do
     HOST=${HOSTS[$i]}
