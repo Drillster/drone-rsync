@@ -15,6 +15,7 @@ The following parameters are used to configure the plugin:
 - **args** - instruct plugin to use these additional rsync CLI arguments, example: `"--blocking-io"`
 - **prescript** - list of commands to execute on remote machines before rsync occurs
 - **script** - list of commands to execute on remote machines after rsync occurs
+- **log_level** - ssh log level, defaults to quiet
 
 It is highly recommended to put your private key into a secret (`rsync_key`) so it is not exposed to users. This can be done using the drone-cli:
 
