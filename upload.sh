@@ -46,6 +46,12 @@ else
     ARGS=$PLUGIN_ARGS
 fi
 
+if [ -z "$PLUGIN_LOG_LEVEL" ]; then
+    LOG_LEVEL=quiet
+else
+    LOG_LEVEL=$PLUGIN_LOG_LEVEL
+fi
+
 # Building rsync command
 expr="rsync -az $ARGS"
 
@@ -57,7 +63,7 @@ if [[ -n "$PLUGIN_DELETE" && "$PLUGIN_DELETE" == "true" ]]; then
     expr="$expr --del"
 fi
 
-expr="$expr -e 'ssh -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -o StrictHostKeyChecking=no'"
+expr="$expr -e 'ssh -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=$LOG_LEVEL -o StrictHostKeyChecking=no'"
 
 # Include
 IFS=','; read -ra INCLUDE <<< "$PLUGIN_INCLUDE"
