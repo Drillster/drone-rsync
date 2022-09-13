@@ -63,7 +63,9 @@ if [[ -n "$PLUGIN_DELETE" && "$PLUGIN_DELETE" == "true" ]]; then
     expr="$expr --del"
 fi
 
-expr="$expr -e 'ssh -p %s -o UserKnownHostsFile=/dev/null -o LogLevel=$LOG_LEVEL -o StrictHostKeyChecking=no'"
+SSH_OPTIONS="-o IdentityFile=/tmp/ssh-id -o UserKnownHostsFile=/dev/null -o LogLevel=$LOG_LEVEL -o StrictHostKeyChecking=no"
+
+expr="$expr -e 'ssh -p %s $SSH_OPTIONS'"
 
 # Include
 IFS=','; read -ra INCLUDE <<< "$PLUGIN_INCLUDE"
@@ -86,26 +88,8 @@ done
 expr="$expr $SOURCE"
 
 # Prepare SSH
-home="/root"
-
-mkdir -p "$home/.ssh"
-
-printf "StrictHostKeyChecking no\n" > "$home/.ssh/config"
-chmod 0700 "$home/.ssh/config"
-
-keyfile="$home/.ssh/id_rsa"
-echo "$SSH_KEY" | grep -q "ssh-ed25519"
-if [ $? -eq 0 ]; then
-    printf "Using ed25519 based key\n"
-    keyfile="$home/.ssh/id_ed25519"
-fi
-echo "$SSH_KEY" | grep -q "ecdsa-"
-if [ $? -eq 0 ]; then
-    printf "Using ecdsa based key\n"
-    keyfile="$home/.ssh/id_ecdsa"
-fi
-echo "$SSH_KEY" > $keyfile
-chmod 0600 $keyfile
+umask 177
+echo "$SSH_KEY" > /tmp/ssh-id
 
 function join_with { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
 
@@ -124,29 +108,28 @@ for ((i=0; i < ${#HOSTS[@]}; i++))
 do
     HOST=${HOSTS[$i]}
     PORT=${PORTS[$i]}
-    if [ -z $PORT ]
-    then
-    # Default Port 22
-    PORT=$DEFAULT_PORT
+    if [ -z $PORT ]; then
+        # Default Port 22
+        PORT=$DEFAULT_PORT
     fi
     echo $(printf "%s" "$ $(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET ...")
     if [ -n "$PLUGIN_PRESCRIPT" ]; then
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST ...")
+        echo $(printf "%s" "$ ssh $SSH_OPTIONS -p $PORT $USER@$HOST ...")
         echo $(printf "%s" " > $prescript ...")
-        eval "ssh -p $PORT $USER@$HOST '$prescript'"
+        eval "ssh $SSH_OPTIONS -p $PORT $USER@$HOST '$prescript'"
         result=$(($result+$?))
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST result: $?")
+        echo $(printf "%s" "$ ssh $SSH_OPTIONS -p $PORT $USER@$HOST result: $?")
         if [ "$result" -gt "0" ]; then exit $result; fi
     fi
     eval "$(printf "$expr" "$PORT") $USER@$HOST:$PLUGIN_TARGET"
     result=$(($result+$?))
     if [ "$result" -gt "0" ]; then exit $result; fi
     if [ -n "$PLUGIN_SCRIPT" ]; then
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST ...")
+        echo $(printf "%s" "$ ssh $SSH_OPTIONS -p $PORT $USER@$HOST ...")
         echo $(printf "%s" " > $postscript ...")
-        eval "ssh -p $PORT $USER@$HOST '$postscript'"
+        eval "ssh $SSH_OPTIONS -p $PORT $USER@$HOST '$postscript'"
         result=$(($result+$?))
-        echo $(printf "%s" "$ ssh -p $PORT $USER@$HOST result: $?")
+        echo $(printf "%s" "$ ssh $SSH_OPTIONS -p $PORT $USER@$HOST result: $?")
         if [ "$result" -gt "0" ]; then exit $result; fi
     fi
 done
