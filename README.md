@@ -1,5 +1,8 @@
 # drone-rsync
-[![drone-rsync on Docker Hub](https://img.shields.io/docker/automated/drillster/drone-rsync.svg)](https://hub.docker.com/r/drillster/drone-rsync/)
+
+Forked version; contains fixes for proper SSH key handling.
+
+# Original readme follows
 
 This is a pure Bash [Drone](https://github.com/drone/drone) >= 0.5 plugin to sync files to remote hosts.
 
