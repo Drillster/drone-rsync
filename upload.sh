@@ -53,7 +53,7 @@ else
 fi
 
 # Building rsync command
-expr="rsync -az $ARGS"
+expr="rsync --progress -avz $ARGS"
 
 if [[ -n "$PLUGIN_RECURSIVE" && "$PLUGIN_RECURSIVE" == "true" ]]; then
     expr="$expr -r"
