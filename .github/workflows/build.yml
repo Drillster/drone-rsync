@@ -1,4 +1,4 @@
-name: Build and release container for ${{ github.repository }}
+name: Build and release container for "${{ github.repository }}"
 
 on:
   workflow_dispatch:
