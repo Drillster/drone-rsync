@@ -68,7 +68,7 @@ steps:
       - "app.tar.gz"
       - "app.tar.gz.md5"
     exclude:
-      - "**.*"
+      - "*"
     prescript:
       - cd ~/packages
       - md5sum -c app.tar.gz.md5
