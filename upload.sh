@@ -1,4 +1,7 @@
 #!/bin/bash
+# Disable patsub_replacement to avoid issues with '&' in pattern substitutions
+shopt -u patsub_replacement
+
 if [ -z "$PLUGIN_HOSTS" ]; then
     echo "Specify at least one host!"
     exit 1
