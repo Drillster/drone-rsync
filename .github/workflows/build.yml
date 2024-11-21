@@ -1,0 +1,68 @@
+name: Build and Publish the image
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 15 15 * *'
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - .gitea/**
+      - .github/**
+      - .gitlib-ci.*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+     
+      - name: Set RELEASE_DATE
+        run: |
+          echo "RELEASE_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+          echo "REPO_NAME=$(echo ${{ github.repository }} | sed -E 's,.+/([^/]+),\1,')" >> ${GITHUB_ENV}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/.buildx-cache.latest
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx- 
+
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker AMD64/ARM64 image for latest
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64, linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REPO }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKER_REPO }}/${{ github.event.repository.name }}:${{ env.RELEASE_DATE }}
+          cache-from: type=local,src=/tmp/.buildx-cache.latest
+          cache-to: type=local,dest=/tmp/.buildx-cache-new.latest
+
+      - name: Rotate the cache for latest
+        run: |
+          rm -rf /tmp/.buildx-cache.latest
+          mv /tmp/.buildx-cache-new.latest /tmp/.buildx-cache.latest
+
