@@ -107,7 +107,18 @@ fi
 echo "$SSH_KEY" > $keyfile
 chmod 0600 $keyfile
 
-function join_with { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+function join_with {
+    local d=$1
+    shift
+    local result="$1"
+    shift
+
+    for item in "$@"; do
+        result+="$d$item"
+    done
+
+    echo "$result"
+}
 
 # Parse SSH precommands
 IFS=','; read -ra COMMANDS <<< "$PLUGIN_PRESCRIPT"
